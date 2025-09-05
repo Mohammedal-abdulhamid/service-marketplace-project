@@ -1,12 +1,16 @@
 const express = require('express');
 const { registerUser, loginUser } = require('../controllers/authController');
-
+const authMiddleware = require('../middleware/authMiddleware'); 
 const router = express.Router();
 
-// POST /api/auth/register
+// Public routes (no token needed)
 router.post('/register', registerUser);
-
-// POST /api/auth/login
 router.post('/login', loginUser);
 
+// Protected route (token required)
+router.get('/profile', authMiddleware, (req, res) => {
+    res.json({ message: `Welcome, user ${req.user.id}!`, user: req.user });
+});
+
 module.exports = router;
+

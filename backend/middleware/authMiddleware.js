@@ -1,9 +1,18 @@
-const express = require('express');
-const { registerUser, loginUser } = require('../controllers/authController');
-const router = express.Router();
+const jwt = require('jsonwebtoken');
 
-// Public routes (no auth required)
-router.post('/register', registerUser);
-router.post('/login', loginUser);
+const authMiddleware = (req, res, next) => {
+  const token = req.header('Authorization')?.split(' ')[1]; 
+  if (!token) {
+    return res.status(401).json({ message: 'No token, authorization denied' });
+  }
 
-module.exports = router;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; 
+    next(); 
+  } catch (error) {
+    res.status(401).json({ message: 'Token is not valid' });
+  }
+};
+
+module.exports = authMiddleware; 
