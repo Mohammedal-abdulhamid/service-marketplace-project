@@ -4,11 +4,14 @@ require('dotenv').config();
 
 const { connectDB, sequelize } = require('./config/db');
 const authRoutes = require('./routes/authRoutes'); 
+const servicesRoutes = require('./routes/servicesRoutes');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.use('/api/auth', authRoutes); 
+app.use('/api/services', servicesRoutes);
 app.get('/', (req, res) => {
     res.send('Server is running!');
   });
@@ -16,7 +19,7 @@ app.get('/', (req, res) => {
 const PORT = process.env.PORT || 4000;
 
 
-app.use('/api/auth', authRoutes);
+
 
   
 
