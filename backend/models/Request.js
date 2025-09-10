@@ -1,32 +1,35 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define("User", {
+    user_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    full_name: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+    },
+    email: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      unique: true,
+    },
+    password_hash: {
+      type: DataTypes.STRING(255),
+      allowNull: false,
+    },
+    role: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+    phone: {
+      type: DataTypes.STRING(20),
+      allowNull: true,
+    },
+  }, {
+    tableName: "users",
+    timestamps: false,
+  });
 
-const Request = sequelize.define('Request', {
-  title: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  description: {
-    type: DataTypes.TEXT,
-    allowNull: false
-  },
-  budget: {
-    type: DataTypes.FLOAT,
-    allowNull: false
-  },
-  status: {
-    type: DataTypes.ENUM('open', 'assigned', 'completed'),
-    defaultValue: 'open'
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  }
-});
-
-// Associations
-User.hasMany(Request, { foreignKey: 'userId' });
-Request.belongsTo(User, { foreignKey: 'userId' });
-
-module.exports = Request;
+  return User;
+};

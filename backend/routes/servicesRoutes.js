@@ -1,5 +1,5 @@
 const express = require('express');
-const { createService, getServices } = require('../controllers/serviceController');
+const { createService, getServiceById, getServices, } = require('../controllers/serviceController');
 const authMiddleware = require('../middleware/authMiddleware');
 
 const router = express.Router();
@@ -9,5 +9,8 @@ router.post('/', authMiddleware, createService);
 
 // Public route - anyone can view services
 router.get('/', getServices);
+
+// Get singal service by ID
+router.get("/:id", getServiceById);
 
 module.exports = router;

@@ -1,17 +1,26 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define("User", {
+    user_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    full_name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password_hash: DataTypes.STRING,
+    role: DataTypes.STRING,
+    phone: DataTypes.STRING,
+    created_at: DataTypes.DATE
+  }, {
+    tableName: "users",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false
+  });
 
-const User = sequelize.define('User', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  name: { type: DataTypes.STRING, allowNull: false },
-  email: { type: DataTypes.STRING, allowNull: false, unique: true },
-  password: { type: DataTypes.STRING, allowNull: false },
-  role: {
-    type: DataTypes.ENUM('service_provider', 'service_seeker'),
-    allowNull: false
-  }
-}, {
-  timestamps: true
-});
+  User.associate = models => {
+    User.hasMany(models.Service, { foreignKey: "provider_id" });
+  };
 
-module.exports = User;
+  return User;
+};
