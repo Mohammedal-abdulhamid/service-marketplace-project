@@ -3,7 +3,12 @@ import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
 function Register() {
-  const [form, setForm] = useState({ full_name: "", email: "", password: "", role: "service_seeker" });
+  const [form, setForm] = useState({
+    full_name: "",
+    email: "",
+    password: "",
+    role: "seeker", 
+  });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -13,7 +18,9 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", form, { headers: { "Content-Type": "application/json" } });
+      await api.post("/auth/register", form, {
+        headers: { "Content-Type": "application/json" },
+      });
       alert("Registration successful! Please login.");
       navigate("/login");
     } catch (error) {
@@ -51,15 +58,19 @@ function Register() {
           required
           className="border px-3 py-2 rounded"
         />
+
+        
         <select
           name="role"
           value={form.role}
           onChange={handleChange}
           className="border px-3 py-2 rounded"
         >
-          <option value="service_seeker">Service Seeker</option>
-          <option value="service_provider">Service Provider</option>
+          <option value="seeker">Service Seeker</option>
+          <option value="provider">Service Provider</option>
+          <option value="admin">Admin</option>
         </select>
+
         <button
           type="submit"
           className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"

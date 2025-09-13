@@ -33,9 +33,17 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: "reviews",
-      timestamps: true, 
+      timestamps: true,       
+      createdAt: "created_at", 
+      updatedAt: false,        
     }
   );
+
+  Review.associate = (models) => {
+    Review.belongsTo(models.User, { as: "reviewer", foreignKey: "reviewer_id" });
+    Review.belongsTo(models.User, { as: "reviewee", foreignKey: "reviewee_id" });
+    Review.belongsTo(models.Service, { foreignKey: "service_id" });
+  };
 
   return Review;
 };

@@ -26,7 +26,10 @@ const Services = () => {
       <h1 className="text-2xl font-bold text-gray-800 mb-6">Available Services</h1>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {services.map((service) => (
-          <div key={service.service_id} className="bg-white p-4 rounded-xl shadow-md relative">
+          <div
+            key={service.service_id}
+            className="bg-white p-4 rounded-xl shadow-md relative"
+          >
             {/* Role label */}
             <span
               className={`absolute top-4 right-4 text-xs font-bold px-3 py-1 rounded-full ${
@@ -43,9 +46,13 @@ const Services = () => {
 
             <div className="flex items-center justify-between mb-4">
               <span className="text-blue-600 font-semibold">
-                Price: {service.price !== undefined
-                  ? new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(Number(service.price))
-                  : 'N/A'}
+                {service.role === "provider"
+                  ? service.price
+                    ? `Price: £${service.price}`
+                    : "Price: N/A"
+                  : service.budget
+                  ? `Budget: £${service.budget}`
+                  : "Budget: N/A"}
               </span>
               <span className="text-gray-700 text-sm">
                 By: {service.User?.full_name || "Unknown"}

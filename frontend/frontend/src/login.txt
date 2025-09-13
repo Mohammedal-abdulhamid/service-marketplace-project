@@ -1,7 +1,33 @@
 // {
 //   "full_name": "Alice1 Provider",
 //   "email": "alice1@example.com",
-//   "password": "Password123",
+//   "password": "module.exports = (sequelize, DataTypes) => {
+  const User = sequelize.define("User", {
+    user_id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true
+    },
+    full_name: DataTypes.STRING,
+    email: DataTypes.STRING,
+    password_hash: DataTypes.STRING,
+    role: DataTypes.STRING,
+    phone: DataTypes.STRING,
+    created_at: DataTypes.DATE
+  }, {
+    tableName: "users",
+    timestamps: true,
+    createdAt: "created_at",
+    updatedAt: false
+  });
+
+  User.associate = models => {
+    User.hasMany(models.Service, { foreignKey: "provider_id" });
+  };
+
+  return User;
+};
+",
 //   "role": "provider"
 // }
 // "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzU3NjE3Mjk4LCJleHAiOjE3NTc3MDM2OTh9.XbjGNHCXUfbN5rtltDrE5pdj2SIKx4-FrCWe7jwqPEQ",

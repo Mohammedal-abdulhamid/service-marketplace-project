@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../utils/api";
+import { useAuth } from "../context/AuthContext"; 
 
 const SingleService = () => {
   const { id } = useParams();
+  const { auth } = useAuth();   // context hook
+  const token = auth?.token;    //  token from context
+
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -13,19 +17,6 @@ const SingleService = () => {
 
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
-
-  // ✅ Token reader
-  const getTokenFromStorage = () => {
-    const authJson = localStorage.getItem("auth");
-    if (authJson) {
-      try {
-        const auth = JSON.parse(authJson);
-        if (auth?.token) return auth.token;
-      } catch (e) {}
-    }
-    return localStorage.getItem("token");
-  };
-  const token = getTokenFromStorage();
 
   //  Render stars helper
   const renderStars = (rating) => {
@@ -39,6 +30,7 @@ const SingleService = () => {
     );
   };
 
+  // Fetch service, messages, reviews
   useEffect(() => {
     const fetchEverything = async () => {
       try {
@@ -46,7 +38,7 @@ const SingleService = () => {
         const svcRes = await api.get(`/services/${id}`);
         setService(svcRes.data);
 
-        // Messages
+        // Messages (only if logged in)
         if (token) {
           const msgRes = await api.get(`/messages/service/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -54,7 +46,7 @@ const SingleService = () => {
           setMessages(msgRes.data || []);
         }
 
-        // Reviews
+        // Reviews (always public)
         const revRes = await api.get(`/reviews/service/${id}`);
         setReviews(revRes.data || []);
       } catch (err) {
@@ -66,9 +58,14 @@ const SingleService = () => {
     fetchEverything();
   }, [id, token]);
 
-  //  Send message
+  // Send message
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !token) return;
+    if (!token) {
+      alert("You must log in to send messages.");
+      return;
+    }
+    if (!newMessage.trim()) return;
+
     setSending(true);
     try {
       const payload = {
@@ -83,6 +80,7 @@ const SingleService = () => {
       setNewMessage("");
     } catch (err) {
       console.error("Error sending message:", err?.response?.data || err.message);
+      alert(err?.response?.data?.error || "Failed to send message");
     } finally {
       setSending(false);
     }
@@ -104,7 +102,7 @@ const SingleService = () => {
       const res = await api.post("/reviews", payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setReviews((prev) => [res.data, ...prev]); // prepend new review
+      setReviews((prev) => [res.data, ...prev]);
       setNewReview({ rating: 0, comment: "" });
     } catch (err) {
       console.error("Error adding review:", err?.response?.data || err.message);
@@ -123,7 +121,9 @@ const SingleService = () => {
       {/* Role label */}
       <span
         className={`absolute top-6 right-6 text-xs font-bold px-3 py-1 rounded-full ${
-          ownerRole === "provider" ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"
+          ownerRole === "provider"
+            ? "bg-green-100 text-green-700"
+            : "bg-yellow-100 text-yellow-700"
         }`}
       >
         {ownerRole === "provider" ? "Provider" : "Seeker"}
@@ -134,11 +134,10 @@ const SingleService = () => {
 
       <div className="flex items-center justify-between mb-6">
         <span className="text-lg font-semibold text-blue-600">
-          Price:{" "}
           {service.price
-            ? new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" }).format(
-                Number(service.price)
-              )
+            ? `Price: £${Number(service.price)}`
+            : service.budget
+            ? `Budget: £${Number(service.budget)}`
             : "N/A"}
         </span>
         <span className="text-gray-700">By: {ownerName}</span>
@@ -180,7 +179,9 @@ const SingleService = () => {
             </div>
             <textarea
               value={newReview.comment}
-              onChange={(e) => setNewReview({ ...newReview, comment: e.target.value })}
+              onChange={(e) =>
+                setNewReview({ ...newReview, comment: e.target.value })
+              }
               placeholder="Write your review..."
               className="w-full border rounded-lg px-3 py-2 mb-2"
             />
@@ -195,48 +196,74 @@ const SingleService = () => {
       </div>
 
       {/* Messaging */}
-      {token ? (
-        <div>
-          <h2 className="text-lg font-bold mb-2">Messages</h2>
-          <div className="space-y-2 mb-4 max-h-60 overflow-y-auto border p-3 rounded-lg bg-gray-50">
-            {messages.length ? (
-              messages.map((msg) => (
-                <div
-                  key={msg.message_id}
-                  className={`p-2 rounded-lg ${
-                    msg.sender_id === service?.User?.user_id
-                      ? "bg-yellow-100 text-yellow-800"
-                      : "bg-blue-100 text-blue-800"
-                  }`}
-                >
-                  <strong>{msg.sender?.full_name || "User"}:</strong> {msg.content}
-                </div>
-              ))
-            ) : (
-              <p className="text-gray-500">No messages yet.</p>
-            )}
-          </div>
+      <div className="mt-6">
+        <h2 className="text-lg font-bold mb-2">Messages</h2>
 
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newMessage}
-              onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Type a message..."
-              className="flex-grow border rounded-lg px-3 py-2"
-            />
-            <button
-              onClick={handleSendMessage}
-              disabled={sending}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
-            >
-              {sending ? "Sending..." : "Send"}
-            </button>
-          </div>
+        <div className="flex gap-2 mb-2">
+          <button
+            disabled={!token}
+            className={`px-4 py-2 rounded-lg text-white ${
+              token
+                ? "bg-blue-600 hover:bg-blue-700"
+                : "bg-gray-400 cursor-not-allowed"
+            }`}
+          >
+            Message
+          </button>
         </div>
-      ) : (
-        <p className="text-red-500">You must log in to send messages or reviews.</p>
-      )}
+
+        {/* Login reminder */}
+        {!token && (
+          <p className="mb-4 text-sm text-red-500">
+            You must{" "}
+            <a href="/login" className="underline font-semibold">
+              log in
+            </a>{" "}
+            to send or view messages.
+          </p>
+        )}
+
+        {token && (
+          <>
+            <div className="space-y-2 mb-4 max-h-60 overflow-y-auto border p-3 rounded-lg bg-gray-50">
+              {messages.length ? (
+                messages.map((msg) => (
+                  <div
+                    key={msg.message_id}
+                    className={`p-2 rounded-lg ${
+                      msg.sender_id === service?.User?.user_id
+                        ? "bg-yellow-100 text-yellow-800"
+                        : "bg-blue-100 text-blue-800"
+                    }`}
+                  >
+                    <strong>{msg.sender?.full_name || "User"}:</strong>{" "}
+                    {msg.content}
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No messages yet.</p>
+              )}
+            </div>
+
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newMessage}
+                onChange={(e) => setNewMessage(e.target.value)}
+                placeholder="Type a message..."
+                className="flex-grow border rounded-lg px-3 py-2"
+              />
+              <button
+                onClick={handleSendMessage}
+                disabled={sending}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              >
+                {sending ? "Sending..." : "Send"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 };

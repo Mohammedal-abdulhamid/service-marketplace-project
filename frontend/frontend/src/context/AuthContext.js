@@ -11,11 +11,13 @@ export const AuthProvider = ({ children }) => {
   const login = (token, user) => {
     const newAuth = { token, user };
     localStorage.setItem("auth", JSON.stringify(newAuth));
+    localStorage.setItem("token", token); // keep token synced
     setAuth(newAuth);
   };
 
   const logout = () => {
     localStorage.removeItem("auth");
+    localStorage.removeItem("token"); // ✅ clear both
     setAuth({ token: null, user: null });
   };
 
