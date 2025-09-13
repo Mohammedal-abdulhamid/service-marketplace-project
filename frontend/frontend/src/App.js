@@ -9,6 +9,10 @@ import SingleService from "./pages/SingleService";
 import ProvidersPage from "./pages/ProvidersPage";
 import RequestersPage from "./pages/RequestersPage";
 import Footer from "./components/Footer";
+import AddListing from "./pages/AddListing";
+
+
+
 
 function App() {
   return (
@@ -27,6 +31,7 @@ function App() {
             <Route path="/services/:id" element={<SingleService />} />
             <Route path="/providers" element={<ProvidersPage />} />
             <Route path="/requests" element={<RequestersPage />} />
+            <Route path="/add-listing" element={<AddListing />} />
           </Routes>
         </main>
 

@@ -18,6 +18,13 @@ function Navbar() {
           <Link to="/services" className="hover:underline">
             All Services
           </Link>
+          <Link
+            to="/add-listing"
+            className="hover:underline"
+          >
+            Add Listing
+          </Link>
+
           <Link to="/providers" className="hover:underline">
             Providers
           </Link>
