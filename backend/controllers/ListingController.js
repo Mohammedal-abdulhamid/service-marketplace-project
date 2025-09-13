@@ -1,5 +1,5 @@
-const Listing = require('../models/Listing');
-const User = require('../models/User');
+const Listing = require('../models/listing');
+const User = require('../models/user');
 
 const createListing = async (req, res) => {
   try {

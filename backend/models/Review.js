@@ -1,18 +1,41 @@
-const { DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const User = require('./User');
-const Listing = require('./Listing');
+module.exports = (sequelize, DataTypes) => {
+  const Review = sequelize.define(
+    "Review",
+    {
+      review_id: {
+        type: DataTypes.INTEGER,
+        primaryKey: true,
+        autoIncrement: true,
+      },
+      booking_id: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+      },
+      reviewer_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      reviewee_id: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      rating: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      comment: {
+        type: DataTypes.TEXT,
+      },
+      created_at: {
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
+      },
+    },
+    {
+      tableName: "reviews",
+      timestamps: true, 
+    }
+  );
 
-const Review = sequelize.define('Review', {
-  id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  rating: { type: DataTypes.INTEGER, allowNull: false },
-  comment: { type: DataTypes.TEXT }
-}, { timestamps: true });
-
-Review.belongsTo(User, { foreignKey: 'userId', onDelete: 'CASCADE' });
-User.hasMany(Review, { foreignKey: 'userId' });
-
-Review.belongsTo(Listing, { foreignKey: 'listingId', onDelete: 'CASCADE' });
-Listing.hasMany(Review, { foreignKey: 'listingId' });
-
-module.exports = Review;
+  return Review;
+};

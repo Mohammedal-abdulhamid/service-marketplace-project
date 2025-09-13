@@ -5,7 +5,7 @@ import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
-  const { login } = useAuth();
+  const { login } = useAuth(); // context to store JWT + user
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -16,21 +16,43 @@ function Login() {
     e.preventDefault();
     try {
       const res = await api.post("/auth/login", form);
-      login(res.data.token); // save token in context
+      // Expecting backend to return { token, user }
+      login(res.data.token, res.data.user); 
       alert("Login successful!");
-      navigate("/services");
+      navigate("/services"); // redirect to services page
     } catch (error) {
       alert(error.response?.data?.message || "Invalid credentials");
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-        <button type="submit">Login</button>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-xl">
+      <h2 className="text-2xl font-bold mb-4">Login</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          name="email"
+          type="email"
+          value={form.email}
+          placeholder="Email"
+          onChange={handleChange}
+          required
+          className="border px-3 py-2 rounded"
+        />
+        <input
+          name="password"
+          type="password"
+          value={form.password}
+          placeholder="Password"
+          onChange={handleChange}
+          required
+          className="border px-3 py-2 rounded"
+        />
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+        >
+          Login
+        </button>
       </form>
     </div>
   );

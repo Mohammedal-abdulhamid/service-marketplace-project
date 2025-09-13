@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
 
 function Register() {
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "service_seeker" });
+  const [form, setForm] = useState({ full_name: "", email: "", password: "", role: "service_seeker" });
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -13,7 +13,7 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post("/auth/register", form);
+      await api.post("/auth/register", form, { headers: { "Content-Type": "application/json" } });
       alert("Registration successful! Please login.");
       navigate("/login");
     } catch (error) {
@@ -22,17 +22,50 @@ function Register() {
   };
 
   return (
-    <div>
-      <h2>Register</h2>
-      <form onSubmit={handleSubmit}>
-        <input name="name" placeholder="Name" onChange={handleChange} required />
-        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
-        <input name="password" type="password" placeholder="Password" onChange={handleChange} required />
-        <select name="role" onChange={handleChange}>
+    <div className="max-w-md mx-auto mt-10 p-6 bg-white shadow-md rounded-xl">
+      <h2 className="text-2xl font-bold mb-4">Register</h2>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        <input
+          name="full_name"
+          value={form.full_name}
+          placeholder="Full Name"
+          onChange={handleChange}
+          required
+          className="border px-3 py-2 rounded"
+        />
+        <input
+          name="email"
+          type="email"
+          value={form.email}
+          placeholder="Email"
+          onChange={handleChange}
+          required
+          className="border px-3 py-2 rounded"
+        />
+        <input
+          name="password"
+          type="password"
+          value={form.password}
+          placeholder="Password"
+          onChange={handleChange}
+          required
+          className="border px-3 py-2 rounded"
+        />
+        <select
+          name="role"
+          value={form.role}
+          onChange={handleChange}
+          className="border px-3 py-2 rounded"
+        >
           <option value="service_seeker">Service Seeker</option>
           <option value="service_provider">Service Provider</option>
         </select>
-        <button type="submit">Register</button>
+        <button
+          type="submit"
+          className="bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition"
+        >
+          Register
+        </button>
       </form>
     </div>
   );

@@ -6,6 +6,10 @@ const { connectDB, sequelize } = require('./config/db');
 const authRoutes = require('./routes/authRoutes'); 
 const servicesRoutes = require('./routes/servicesRoutes');
 const requestRoutes = require('./routes/requestRoutes');
+const messageRoutes = require('./routes/messageRoutes')
+const reviewRoutes = require('./routes/reviewRoutes');
+
+
 
 
 const app = express();
@@ -15,6 +19,8 @@ app.use(express.json());
 app.use('/api/auth', authRoutes); 
 app.use('/api/services', servicesRoutes);
 app.use('/api/requests', requestRoutes);
+app.use('/api/messages', require('./routes/messageRoutes'));
+app.use('/api/reviews', reviewRoutes);
 
 app.get('/', (req, res) => {
     res.send('Server is running!');

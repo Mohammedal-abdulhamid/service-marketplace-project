@@ -1,35 +1,24 @@
 module.exports = (sequelize, DataTypes) => {
-  const User = sequelize.define("User", {
-    user_id: {
-      type: DataTypes.INTEGER,
-      primaryKey: true,
-      autoIncrement: true,
+  const Request = sequelize.define(
+    "Request",
+    {
+      request_id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+      service_id: { type: DataTypes.INTEGER, allowNull: false },
+      user_id: { type: DataTypes.INTEGER, allowNull: false },
+      status: { type: DataTypes.STRING, defaultValue: "pending" },
+      created_at: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     },
-    full_name: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-    },
-    email: {
-      type: DataTypes.STRING(100),
-      allowNull: false,
-      unique: true,
-    },
-    password_hash: {
-      type: DataTypes.STRING(255),
-      allowNull: false,
-    },
-    role: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-    },
-    phone: {
-      type: DataTypes.STRING(20),
-      allowNull: true,
-    },
-  }, {
-    tableName: "users",
-    timestamps: false,
-  });
+    {
+      tableName: "requests",
+      timestamps: false,
+    }
+  );
 
-  return User;
+  // Add associate function
+  Request.associate = (models) => {
+    Request.belongsTo(models.User, { foreignKey: "user_id" });
+    Request.belongsTo(models.Service, { foreignKey: "service_id" });
+  };
+
+  return Request;
 };

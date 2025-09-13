@@ -1,0 +1,48 @@
+// {
+//   "full_name": "Alice1 Provider",
+//   "email": "alice1@example.com",
+//   "password": "Password123",
+//   "role": "provider"
+// }
+// "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMiwicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzU3NjE3Mjk4LCJleHAiOjE3NTc3MDM2OTh9.XbjGNHCXUfbN5rtltDrE5pdj2SIKx4-FrCWe7jwqPEQ",
+//     "user": {
+//         "user_id": 12,
+//         "full_name": "Alice1 Provider",
+//         "role": "provider"
+//     }
+
+// >>>>>>>>
+// {
+//   "email": "alice2@example.com",
+//   "password": "Password123"
+  
+// }
+
+// {
+//   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxMywicm9sZSI6InByb3ZpZGVyIiwiaWF0IjoxNzU3NjE3NDE4LCJleHAiOjE3NTc3MDM4MTh9.9HliUjwGAQD0xtzohSPuFqWG88FGx-g8hz3PNs365wg",
+//   "user": {
+//       "user_id": 13,
+//       "full_name": "Alice2 Provider",
+//       "role": "provider"
+//   }
+// }
+
+// {
+//   "sent_at": "2025-09-11T18:21:00.991Z",
+//   "message_id": 1,
+//   "sender_id": 12,
+//   "receiver_id": 13,
+//   "content": "Hi Alice2, this is Alice1!",
+//   "service_id": null,
+//   "booking_id": null
+// }
+
+// {
+//   "sent_at": "2025-09-11T18:27:56.074Z",
+//   "message_id": 3,
+//   "sender_id": 12,
+//   "receiver_id": 12,
+//   "content": "Hello Alice1, got your message!",
+//   "service_id": null,
+//   "booking_id": null
+// }
