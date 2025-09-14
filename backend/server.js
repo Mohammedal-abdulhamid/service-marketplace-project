@@ -21,7 +21,7 @@ app.use('/api/services', servicesRoutes);
 app.use('/api/requests', requestRoutes);
 app.use('/api/messages', require('./routes/messageRoutes'));
 app.use('/api/reviews', reviewRoutes);
-
+app.use("/api/profile", require("./routes/profileRoutes"));
 app.get('/', (req, res) => {
     res.send('Server is running!');
   });

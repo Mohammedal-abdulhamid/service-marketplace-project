@@ -14,17 +14,13 @@ function Navbar() {
         </div>
 
         {/* Navigation Links */}
-        <div className="space-x-4">
+        <div className="space-x-4 flex items-center">
+          <Link to="/add-listing" className="hover:underline">
+            Add Listing
+          </Link>
           <Link to="/services" className="hover:underline">
             All Services
           </Link>
-          <Link
-            to="/add-listing"
-            className="hover:underline"
-          >
-            Add Listing
-          </Link>
-
           <Link to="/providers" className="hover:underline">
             Providers
           </Link>
@@ -34,8 +30,9 @@ function Navbar() {
 
           {token ? (
             <>
-              <Link to="/create-service" className="hover:underline">
-                Create Service
+              {/*  Manage Profile link only when logged in */}
+              <Link to="/profile" className="hover:underline">
+                Manage Profile
               </Link>
               <button
                 onClick={logout}
