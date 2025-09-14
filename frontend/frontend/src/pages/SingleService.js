@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import api from "../utils/api";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 
 const SingleService = () => {
   const { id } = useParams();
-  const { auth } = useAuth();   // context hook
-  const token = auth?.token;    //  token from context
+  const { auth } = useAuth();
+  const token = auth?.token;
 
   const [service, setService] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ const SingleService = () => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
 
-  //  Render stars helper
+  // ⭐ Render stars
   const renderStars = (rating) => {
     const filled = "★".repeat(rating);
     const empty = "☆".repeat(5 - rating);
@@ -34,11 +34,9 @@ const SingleService = () => {
   useEffect(() => {
     const fetchEverything = async () => {
       try {
-        // Service details
         const svcRes = await api.get(`/services/${id}`);
         setService(svcRes.data);
 
-        // Messages (only if logged in)
         if (token) {
           const msgRes = await api.get(`/messages/service/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
@@ -46,7 +44,6 @@ const SingleService = () => {
           setMessages(msgRes.data || []);
         }
 
-        // Reviews (always public)
         const revRes = await api.get(`/reviews/service/${id}`);
         setReviews(revRes.data || []);
       } catch (err) {
@@ -58,7 +55,7 @@ const SingleService = () => {
     fetchEverything();
   }, [id, token]);
 
-  // Send message
+  // 💬 Send message
   const handleSendMessage = async () => {
     if (!token) {
       alert("You must log in to send messages.");
@@ -86,7 +83,7 @@ const SingleService = () => {
     }
   };
 
-  // Submit review
+  // ⭐ Submit review
   const handleAddReview = async () => {
     if (!newReview.rating || !newReview.comment.trim()) {
       alert("Please select a rating and write a comment.");
@@ -107,6 +104,27 @@ const SingleService = () => {
     } catch (err) {
       console.error("Error adding review:", err?.response?.data || err.message);
       alert(err?.response?.data?.error || "Failed to add review");
+    }
+  };
+
+  // 💳 Start checkout
+  const handleCheckout = async () => {
+    if (!token) {
+      alert("You must log in to make a payment.");
+      return;
+    }
+    try {
+      const res = await api.post(
+        "/payments/create-checkout-session",
+        { serviceId: service?.service_id },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (res.data.url) {
+        window.location.href = res.data.url; // redirect to Stripe Checkout
+      }
+    } catch (err) {
+      console.error("Payment error:", err?.response?.data || err.message);
+      alert("Failed to start payment.");
     }
   };
 
@@ -143,7 +161,19 @@ const SingleService = () => {
         <span className="text-gray-700">By: {ownerName}</span>
       </div>
 
-      {/* Reviews */}
+      {/* 💳 Payment Button */}
+      {service.price && (
+        <div className="mb-6">
+          <button
+            onClick={handleCheckout}
+            className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+          >
+            Pay with Stripe
+          </button>
+        </div>
+      )}
+
+      {/* ⭐ Reviews */}
       <div className="mb-6">
         <h2 className="text-lg font-bold mb-2">Reviews</h2>
         {reviews.length ? (
@@ -195,33 +225,9 @@ const SingleService = () => {
         )}
       </div>
 
-      {/* Messaging */}
+      {/* 💬 Messaging */}
       <div className="mt-6">
         <h2 className="text-lg font-bold mb-2">Messages</h2>
-
-        <div className="flex gap-2 mb-2">
-          <button
-            disabled={!token}
-            className={`px-4 py-2 rounded-lg text-white ${
-              token
-                ? "bg-blue-600 hover:bg-blue-700"
-                : "bg-gray-400 cursor-not-allowed"
-            }`}
-          >
-            Message
-          </button>
-        </div>
-
-        {/* Login reminder */}
-        {!token && (
-          <p className="mb-4 text-sm text-red-500">
-            You must{" "}
-            <a href="/login" className="underline font-semibold">
-              log in
-            </a>{" "}
-            to send or view messages.
-          </p>
-        )}
 
         {token && (
           <>
@@ -262,6 +268,16 @@ const SingleService = () => {
               </button>
             </div>
           </>
+        )}
+
+        {!token && (
+          <p className="mb-4 text-sm text-red-500">
+            You must{" "}
+            <a href="/login" className="underline font-semibold">
+              log in
+            </a>{" "}
+            to send or view messages.
+          </p>
         )}
       </div>
     </div>
