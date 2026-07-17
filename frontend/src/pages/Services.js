@@ -9,6 +9,7 @@ const Services = () => {
     const fetchServices = async () => {
       try {
         const res = await api.get("/services");
+        console.log("Services response:", res.data);
         setServices(res.data);
       } catch (error) {
         console.error("Error fetching services:", error);
