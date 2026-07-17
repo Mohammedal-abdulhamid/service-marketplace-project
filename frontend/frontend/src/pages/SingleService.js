@@ -18,7 +18,7 @@ const SingleService = () => {
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: "" });
 
-  // ⭐ Render stars
+  //  Render stars
   const renderStars = (rating) => {
     const filled = "★".repeat(rating);
     const empty = "☆".repeat(5 - rating);
